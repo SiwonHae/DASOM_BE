@@ -35,6 +35,11 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     implementation 'com.github.in-seo:univcert:master-SNAPSHOT'
+    implementation 'com.aventrix.jnanoid:jnanoid:2.0.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:3.0.4'
+
+
 }
 
 tasks.named('test') {
