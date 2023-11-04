@@ -15,7 +15,7 @@ public class Post extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long postId;
 
     private String title;
     private String content;
@@ -26,12 +26,12 @@ public class Post extends BaseTimeEntity {
     private User user;
 
     // 미팅 인원
-    @Column(name = "number", nullable = false)
+    @Column(name = "number")
     @Enumerated(EnumType.STRING)
     private Number number;
 
     // 모집 성별(?)
-    @Column(name = "gender", nullable = false)
+    @Column(name = "gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
 

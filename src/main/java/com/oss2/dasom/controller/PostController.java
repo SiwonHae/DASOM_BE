@@ -30,7 +30,7 @@ public class PostController {
     }
 
     // 특정 게시물 조회
-    @GetMapping("/{id}")
+    @GetMapping("/{postId}")
     public ResponseEntity<GetPostResponse> findPost(@PathVariable Long postId) {
         GetPostResponse postResponse = new GetPostResponse(postService.getPostId(postId));
         return ResponseEntity.ok()
@@ -45,14 +45,14 @@ public class PostController {
     }
 
     // 게시물 수정
-    @PutMapping("/{id}")
+    @PutMapping("/{postId}")
     public ResponseEntity<Void> updatePost(@PathVariable Long postId, @RequestBody UpdatePostRequest request) {
         postService.updatePost(postId, request);
         return ResponseEntity.ok().build();
     }
 
     // postId로 삭제
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
         postService.deletePost(postId);
         return ResponseEntity.ok().build();

@@ -36,6 +36,7 @@ public class User extends BaseTimeEntity {
     @Setter
     private Role role;
 
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     private String provider;

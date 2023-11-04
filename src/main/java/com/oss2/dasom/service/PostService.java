@@ -28,6 +28,9 @@ public class PostService {
     // 모집 게시물 등록
     public Long createPost(CreatePostRequest dto) {
         User user = userRepository.findByUserId(dto.getUserId());
+
+        System.out.println(user);
+
         Post post = Post.builder().title(dto.getTitle())
                 .content(dto.getContent())
                 .openKakaoAddress(dto.getOpenKakaoAddress())
@@ -36,7 +39,7 @@ public class PostService {
                 .number(dto.getNumber())
                 .gender(dto.getGender()).build();
         postRepository.save(post);
-        return post.getId();
+        return post.getPostId();
     }
 
     // 게시물 수정

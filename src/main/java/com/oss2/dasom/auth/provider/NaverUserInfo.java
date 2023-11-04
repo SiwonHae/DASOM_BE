@@ -52,9 +52,9 @@ public class NaverUserInfo implements OAuth2UserInfo{
     public Gender getGender() {
         String gen = attributesResponse.get("gender").toString();
         if ("M".equals(gen)) {
-            return Gender.Male;
+            return Gender.MALE;
         } else if ("F".equals(gen)) {
-            return Gender.Female;
+            return Gender.FEMALE;
         }
         return null;
     }
