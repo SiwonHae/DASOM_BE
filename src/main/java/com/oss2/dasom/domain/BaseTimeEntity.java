@@ -1,4 +1,5 @@
-package com.oss2.dasom.config;
+package com.oss2.dasom.domain;
+
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

@@ -39,6 +39,8 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:3.0.4'
 
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
 }
 
