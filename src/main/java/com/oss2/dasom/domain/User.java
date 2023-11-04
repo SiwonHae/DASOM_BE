@@ -11,9 +11,11 @@ import java.sql.Timestamp;
 @ToString
 @NoArgsConstructor
 public class User extends BaseTimeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
+    @Setter
+    @EmbeddedId
+    @AttributeOverride(name ="id",column = @Column(name = "user_id"))
+    private NanoId userId;
 
     private String username;
 

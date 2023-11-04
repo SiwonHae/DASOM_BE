@@ -4,6 +4,7 @@ import com.oss2.dasom.auth.provider.KakaoUserInfo;
 import com.oss2.dasom.auth.provider.NaverUserInfo;
 import com.oss2.dasom.auth.provider.OAuth2UserInfo;
 import com.oss2.dasom.domain.Gender;
+import com.oss2.dasom.domain.NanoId;
 import com.oss2.dasom.domain.Role;
 import com.oss2.dasom.domain.User;
 import com.oss2.dasom.repository.UserRepository;
@@ -58,6 +59,8 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .age(age).nickname(nickname).school(school).gender(gender)
                     .provider(provider).providerId(providerId)
                     .build();
+
+            byUsername.setUserId(NanoId.makeId());
             userRepository.save(byUsername);
 
             System.out.println(byUsername);
