@@ -9,8 +9,7 @@
 <div th:if="${oauth2User != null}">
   <p th:text="${oauth2User.name}">Name</p>
   <!-- 여기에 추가 정보 입력 폼을 만들 수 있습니다. -->
-  <form action="/saveUserInfo" method="post">
-
+  <form action="/users/signup" method="post">
     <button type="submit">Save</button>
   </form>
 </div>

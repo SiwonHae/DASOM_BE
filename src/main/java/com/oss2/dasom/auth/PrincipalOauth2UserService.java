@@ -49,6 +49,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         String nickname = "따로입력";
         String school = "따로입력";
+        String univEmail = "따로입력";
 
         User byUsername = userRepository.findByEmail(email);
 
@@ -56,7 +57,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         if(byUsername == null){
             byUsername = User.oauth2Register()
                     .username(username).email(email).role(role).realname(realname)
-                    .age(age).nickname(nickname).school(school).gender(gender)
+                    .age(age).nickname(nickname).school(school).gender(gender).univEmail(univEmail)
                     .provider(provider).providerId(providerId)
                     .build();
 

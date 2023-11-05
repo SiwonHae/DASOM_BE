@@ -32,6 +32,8 @@ public class User extends BaseTimeEntity {
     @Setter
     private String email;
 
+    private String univEmail;
+
     @Enumerated(EnumType.STRING)
     @Setter
     private Role role;
@@ -43,9 +45,10 @@ public class User extends BaseTimeEntity {
     private String providerId;
 
     @Builder(builderClassName = "OAuth2Register", builderMethodName = "oauth2Register")
-    public User(String username, Gender gender, String school, String nickname, String realname, int age, String email, Role role, String provider, String providerId) {
+    public User(String username, String univEmail, Gender gender, String school, String nickname, String realname, int age, String email, Role role, String provider, String providerId) {
         this.username = username;
         this.nickname = nickname;
+        this.univEmail = univEmail;
         this.school = school;
         this.email = email;
         this.realname = realname;

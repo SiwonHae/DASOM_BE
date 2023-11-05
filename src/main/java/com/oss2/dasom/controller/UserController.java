@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Controller
@@ -34,12 +35,6 @@ public class UserController {
         return "user";
     }
 
-    @GetMapping("/manager")
-    @ResponseBody
-    public String manager(){
-        return "manager";
-    }
-
     @GetMapping("/admin")
     @ResponseBody
     public String admin(){
@@ -47,7 +42,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/form/loginInfo")
+    @GetMapping("/users/info")
     @ResponseBody
     public String formLoginInfo(Authentication authentication, @AuthenticationPrincipal PrincipalDetails principalDetails){
 
@@ -57,56 +52,29 @@ public class UserController {
         return user.toString();
     }
 
-
-    @GetMapping("/oauth/loginInfo")
-    @ResponseBody
-    public String oauthLoginInfo(Authentication authentication, @AuthenticationPrincipal OAuth2User oAuth2UserPrincipal){
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        Map<String, Object> attributes = oAuth2User.getAttributes();
-        System.out.println(attributes);
-        return attributes.toString();     //세션에 담긴 user가져올 수 있음음
-    }
-
-    @PostMapping("/oauth/test")
-    @ResponseBody
-    public String testPost(Authentication authentication, @AuthenticationPrincipal OAuth2User oAuth2UserPrincipal){
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        Map<String, Object> attributes = oAuth2User.getAttributes();
-        System.out.println(attributes);
-
-        return attributes.toString();     //세션에 담긴 user가져올 수 있음음
-    }
-
-    @GetMapping("/oauth/myinfo")
-    public String getUserInfo(@AuthenticationPrincipal OAuth2User oauth2User, Model model) {
+    @GetMapping("/users/signup")
+    public String createGet(@AuthenticationPrincipal OAuth2User oauth2User, Model model) {
         model.addAttribute("oauth2User", oauth2User);
         return "userinfo";
     }
 
-    @PostMapping("/saveUserInfo")
+    @PostMapping("/users/signup")
     @ResponseBody
-    public String saveUserInfo(@AuthenticationPrincipal OAuth2User oauth2User, SignUpRequest signUpRequest) {
+    public String createUser(@AuthenticationPrincipal OAuth2User oauth2User, SignUpRequest signUpRequest) throws IOException {
         String email = oauth2User.getAttribute("email");
-
         User user = userRepository.findByEmail(email);
 
-        userService.createUser(user, signUpRequest);
-
-        return user.toString();
-    }
-
-
-    @GetMapping("/loginInfo")
-    @ResponseBody
-    public String loginInfo(Authentication authentication, @AuthenticationPrincipal PrincipalDetails principalDetails){
-        String result = "";
-
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        if(principal.getUser().getProvider() == null) {
-            result = result + "Form 로그인 : " + principal;
-        }else{
-            result = result + "OAuth2 로그인 : " + principal;
+        boolean sucessSendMail = userService.sendVerifyMail(signUpRequest);
+        if (sucessSendMail) {
+            boolean sucessReceiveMail = userService.receiveVerifyMail(user, signUpRequest);
+            if (sucessReceiveMail) {
+                return "회원가입 성공";
+            } else {
+                return "회원가입 실패(인증 번호 틀림)";
+            }
+        } else {
+            return "인증 메일 보내기 실패";
         }
-        return result;
     }
 }
+

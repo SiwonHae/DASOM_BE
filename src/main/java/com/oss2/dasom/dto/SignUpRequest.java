@@ -6,4 +6,6 @@ import lombok.Getter;
 public class SignUpRequest {
     String nickname;
     String school;
+    String univEmail;
+    int inputVerifyCode;
 }
