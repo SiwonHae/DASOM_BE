@@ -38,6 +38,7 @@ public class UserService {
         return false;
     }
 
+    @Transactional
     public boolean receiveVerifyMail(User user, SignUpRequest signUpRequest) throws IOException {
 
         Map<String, Object> cert = verifyUnivEmailCode(signUpRequest);
@@ -56,15 +57,14 @@ public class UserService {
             }
         }
         return false;
-
     }
 
     public Map<String, Object> verifyUnivEmail(SignUpRequest signUpRequest) throws IOException {
         String key = myAppProperties.getApi_key();
         String email = signUpRequest.getUnivEmail();
         String univName = signUpRequest.getSchool();
-
         boolean univCheck = true;
+
         Map<String, Object> cert = UnivCert.certify(key, email, univName, univCheck);
         return cert;
     }
@@ -76,8 +76,6 @@ public class UserService {
         int verifyCode = signUpRequest.getInputVerifyCode();
 
         Map<String, Object> cert = UnivCert.certifyCode(key, email, univName, verifyCode);
-
         return cert;
     }
-
 }
