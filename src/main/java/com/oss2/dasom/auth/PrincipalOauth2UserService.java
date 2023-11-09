@@ -53,8 +53,8 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         User byUsername = userRepository.findByEmail(email);
 
-        //DB에 없는 사용자라면 회원가입
-        if(byUsername == null){
+        // 최초 로그인인 경우
+        if(byUsername == null) {
             byUsername = User.oauth2Register()
                     .username(username).email(email).role(role).realname(realname)
                     .age(age).nickname(nickname).school(school).gender(gender).univEmail(univEmail)
@@ -65,6 +65,9 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             userRepository.save(byUsername);
 
             System.out.println(byUsername);
+        } else {
+            // 최초 로그인이 아닌 경우
+
         }
 
         return new PrincipalDetails(byUsername, oAuth2UserInfo);
