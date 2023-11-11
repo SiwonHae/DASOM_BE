@@ -25,7 +25,7 @@ public class RequestService {
 
     // 게시물별 신청 조회
     public List<Request> getPostId(Long postId) {
-        Post post = postRepository.findById(postId).orElse(null);
+        Post post = postRepository.findByPostId(postId);
         List<Request> requests = requestRepository.findByPost(post);
         return requests;
     }

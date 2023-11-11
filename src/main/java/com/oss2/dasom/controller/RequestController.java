@@ -24,7 +24,7 @@ public class RequestController {
     private RequestService requestService;
 
     // postId별 신청 조회
-    @GetMapping("/{postId}")
+    @GetMapping("/post/{postId}")
     public ResponseEntity<List<GetRequestResponse>> findRequestByPost(@PathVariable Long postId) {
         List<GetRequestResponse> requests = requestService.getPostId(postId)
                 .stream()
@@ -34,7 +34,7 @@ public class RequestController {
     }
 
     // userId별 신청 조회
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<List<GetRequestResponse>> findRequestByUser(@PathVariable NanoId userId) {
         List<GetRequestResponse> requests = requestService.getUserId(userId)
                 .stream()
@@ -65,7 +65,7 @@ public class RequestController {
     }
 
     // 신청 수락/거절
-    @PutMapping("/{requestId}")
+    @PutMapping("/result/{requestId}")
     public ResponseEntity<Void> updateRequestResult(@PathVariable Long requestId, @RequestParam Result result) {
         requestService.updateRequestResult(requestId, result);
         return ResponseEntity.ok().build();

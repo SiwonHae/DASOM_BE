@@ -3,9 +3,11 @@ package com.oss2.dasom.dto;
 import com.oss2.dasom.domain.NanoId;
 import com.oss2.dasom.domain.Request;
 import com.oss2.dasom.domain.Result;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 public class GetRequestResponse {
     private Long requestId;
     private String title;
@@ -26,4 +28,5 @@ public class GetRequestResponse {
         this.userId = request.getUser().getUserId();
         this.postId = request.getPost().getPostId();
     }
+
 }

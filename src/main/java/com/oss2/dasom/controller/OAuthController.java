@@ -1,8 +1,11 @@
 package com.oss2.dasom.controller;
 
 import com.oss2.dasom.auth.provider.OAuthServerProvider;
+import com.oss2.dasom.domain.NanoId;
+import com.oss2.dasom.domain.User;
 import com.oss2.dasom.service.OAuthService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
@@ -31,9 +34,10 @@ public class OAuthController {
     @GetMapping("/login/{oAuthServerProvider}")
     public ResponseEntity<?> login(
             @PathVariable OAuthServerProvider oAuthServerProvider,
-            @RequestParam("code") String code
+            @RequestParam("code") String code,
+            HttpSession session
     ) {
-        String login = oAuthService.login(oAuthServerProvider, code);
-        return ResponseEntity.ok(login);
+        String userId = oAuthService.login(oAuthServerProvider, code);
+        return ResponseEntity.ok(userId);
     }
 }

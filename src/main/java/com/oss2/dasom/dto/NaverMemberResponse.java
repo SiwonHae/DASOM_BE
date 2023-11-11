@@ -2,10 +2,7 @@ package com.oss2.dasom.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.oss2.dasom.domain.Gender;
-import com.oss2.dasom.domain.NanoId;
-import com.oss2.dasom.domain.OAuthId;
-import com.oss2.dasom.domain.User;
+import com.oss2.dasom.domain.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,6 +38,7 @@ public record NaverMemberResponse(
     public User toDomain() {
         return User.builder()
                 .userId(NanoId.makeId())
+                .role(Role.ROLE_NOTUSER)
                 .oauthId(new OAuthId(String.valueOf(response.id), NAVER))
                 .email(response.email)
                 .realname(response.name)

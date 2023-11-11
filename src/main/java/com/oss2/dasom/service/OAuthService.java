@@ -27,4 +27,8 @@ public class OAuthService {
                 .orElseGet(() -> userRepository.save(user));
         return saved.getUserId().toString();
     }
+
+    public User getUserById(NanoId userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
 }

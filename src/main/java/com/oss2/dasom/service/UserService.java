@@ -1,6 +1,7 @@
 package com.oss2.dasom.service;
 
 import com.oss2.dasom.config.MyAppProperties;
+import com.oss2.dasom.domain.NanoId;
 import com.oss2.dasom.domain.Role;
 import com.oss2.dasom.domain.User;
 import com.oss2.dasom.dto.SignUpRequest;
@@ -39,7 +40,7 @@ public class UserService {
     }
 
     @Transactional
-    public boolean receiveVerifyMail(User user, SignUpRequest signUpRequest) throws IOException {
+    public boolean receiveVerifyMail(SignUpRequest signUpRequest) throws IOException {
 
         Map<String, Object> cert = verifyUnivEmailCode(signUpRequest);
         Object successObj = cert.get("success");
@@ -57,7 +58,7 @@ public class UserService {
 
     public Map<String, Object> verifyUnivEmail(SignUpRequest signUpRequest) throws IOException {
         String key = myAppProperties.getApi_key();
-        String email = signUpRequest.getUnivEmail();
+        String email = signUpRequest.getUnivemail();
         String univName = signUpRequest.getSchool();
         boolean univCheck = true;
 
@@ -67,7 +68,7 @@ public class UserService {
 
     public Map<String, Object> verifyUnivEmailCode(SignUpRequest signUpRequest) throws IOException {
         String key = myAppProperties.getApi_key();
-        String email = signUpRequest.getUnivEmail();
+        String email = signUpRequest.getUnivemail();
         String univName = signUpRequest.getSchool();
         int verifyCode = signUpRequest.getInputVerifyCode();
 
@@ -75,7 +76,10 @@ public class UserService {
         return cert;
     }
 
-    public void createUser(User user, SignUpRequest signUpRequest) {
+    public void createUser(SignUpRequest signUpRequest) {
+
+        User user = userRepository.findByUserId(NanoId.of(signUpRequest.getUserId()));
+
         user.setNickname(signUpRequest.getNickname());
         user.setSchool(signUpRequest.getSchool());
         user.setRole(Role.ROLE_USER);

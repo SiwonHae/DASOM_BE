@@ -19,8 +19,8 @@ public class SecurityConfig {
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
 
         http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
-                .requestMatchers("/users/**").hasAnyRole("USER")
-                .requestMatchers("/admin/**").hasAnyRole("ADMIN")
+//                .requestMatchers("/users/**").hasAnyRole("USER")
+//                .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                 .anyRequest().permitAll()
         );
 
