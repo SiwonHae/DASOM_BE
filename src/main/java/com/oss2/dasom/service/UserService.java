@@ -47,10 +47,6 @@ public class UserService {
         if (successObj instanceof Boolean) {
             Boolean success = (Boolean) successObj;
             if (success) {
-                user.setNickname(signUpRequest.getNickname());
-                user.setSchool(signUpRequest.getSchool());
-                user.setRole(Role.ROLE_USER);
-                userRepository.save(user);
                 return true;
             } else {
                 return false;
@@ -77,5 +73,12 @@ public class UserService {
 
         Map<String, Object> cert = UnivCert.certifyCode(key, email, univName, verifyCode);
         return cert;
+    }
+
+    public void createUser(User user, SignUpRequest signUpRequest) {
+        user.setNickname(signUpRequest.getNickname());
+        user.setSchool(signUpRequest.getSchool());
+        user.setRole(Role.ROLE_USER);
+        userRepository.save(user);
     }
 }

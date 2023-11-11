@@ -29,8 +29,6 @@ public class PostService {
     public Long createPost(CreatePostRequest dto) {
         User user = userRepository.findByUserId(dto.getUserId());
 
-        System.out.println(user);
-
         Post post = Post.builder().title(dto.getTitle())
                 .content(dto.getContent())
                 .openKakaoAddress(dto.getOpenKakaoAddress())
