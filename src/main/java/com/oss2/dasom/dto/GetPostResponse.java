@@ -1,6 +1,7 @@
 package com.oss2.dasom.dto;
 
 import com.oss2.dasom.domain.Gender;
+import com.oss2.dasom.domain.NanoId;
 import com.oss2.dasom.domain.Number;
 import com.oss2.dasom.domain.Post;
 import lombok.Getter;
@@ -15,6 +16,7 @@ public class GetPostResponse {
     private LocalDateTime modifiedDate;
     private String openKakaoAddress;
     private String alcohol;
+    private NanoId userId;
     private String nickname;
     private Number number;
     private Gender gender;
@@ -29,6 +31,7 @@ public class GetPostResponse {
         this.nickname = post.getUser().getNickname();
         this.number = post.getNumber();
         this.gender = post.getGender();
+        this.userId = post.getUser().getUserId();
     }
 
 }
