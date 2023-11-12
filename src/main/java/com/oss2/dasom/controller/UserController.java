@@ -1,7 +1,9 @@
 package com.oss2.dasom.controller;
 
+import com.oss2.dasom.dto.GetUserResponse;
 import com.oss2.dasom.dto.SignUpRequest;
 import com.oss2.dasom.service.UserService;
+import com.univcert.api.UnivCert;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,18 @@ import java.io.IOException;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> userInfo(@PathVariable String userId) {
+        GetUserResponse getUserResponse = userService.getUserInfo(userId);
+        return ResponseEntity.ok().body(getUserResponse);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable String userId) throws IOException {
+        userService.deleteUser(userId);
+        return ResponseEntity.ok().body(true);
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody SignUpRequest signUpRequest) {
@@ -28,10 +42,8 @@ public class UserController {
         boolean successSendMail = userService.sendVerifyMail(signUpRequest);
 
         if (successSendMail) {
-            System.out.printf("성공" + successSendMail);
             return ResponseEntity.ok().body(true);
         } else {
-            System.out.printf("실패" + successSendMail);
             return ResponseEntity.ok().body(false);
         }
     }

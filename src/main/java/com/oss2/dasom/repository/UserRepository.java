@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, NanoId> {
     Optional<User> findByOauthId(OAuthId oauthId);
-    User findByUserId(NanoId userId);
+    Optional<User> findByUserId(NanoId userId);
 }

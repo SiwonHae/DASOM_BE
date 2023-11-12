@@ -31,8 +31,6 @@ public class User extends BaseTimeEntity {
     @AttributeOverride(name ="id",column = @Column(name = "user_id"))
     private NanoId userId;
 
-    private String username;
-
     public String nickname;
 
     public String school;
@@ -50,7 +48,6 @@ public class User extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
 
     @Embedded
     private OAuthId oauthId;

@@ -27,7 +27,8 @@ public class PostService {
 
     // 모집 게시물 등록
     public Long createPost(CreatePostRequest dto) {
-        User user = userRepository.findByUserId(dto.getUserId());
+        User user = userRepository.findByUserId(dto.getUserId()).orElseThrow(() ->
+                new IllegalArgumentException("존재하지 않은 회원입니다."));;
 
         Post post = Post.builder().title(dto.getTitle())
                 .content(dto.getContent())

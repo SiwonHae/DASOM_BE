@@ -32,14 +32,16 @@ public class RequestService {
 
     // 사용자별 신청 조회
     public List<Request> getUserId(NanoId userId) {
-        User user = userRepository.findByUserId(userId);
+        User user = userRepository.findByUserId(userId).orElseThrow(() ->
+                new IllegalArgumentException("존재하지 않은 회원입니다."));;
         List<Request> requests = requestRepository.findByUser(user);
         return requests;
     }
 
     // 신청 등록
     public Long createRequest(CreateRequestRequest dto) {
-        User user = userRepository.findByUserId(dto.getUserId());
+        User user = userRepository.findByUserId(dto.getUserId()).orElseThrow(() ->
+                new IllegalArgumentException("존재하지 않은 회원입니다."));;
         Post post = postRepository.findByPostId(dto.getPostId());
         Request request = Request.builder().title(dto.getTitle())
                 .content(dto.getContent())
