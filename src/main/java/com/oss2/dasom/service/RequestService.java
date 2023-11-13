@@ -77,5 +77,11 @@ public class RequestService {
         Request request = requestRepository.findByRequestId(requestId);
         request.setResult(result);
         requestRepository.save(request);
+        if(request.getResult() == Result.YES) {
+            notificationService.saveRequest(request, NotificationKind.YES);
+        }
+        else {
+            notificationService.saveRequest(request, NotificationKind.NO);
+        }
     }
 }
