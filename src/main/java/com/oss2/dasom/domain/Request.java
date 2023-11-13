@@ -27,6 +27,4 @@ public class Request extends BaseTimeEntity {
     @ManyToOne
     private Post post;
 
-
-
 }

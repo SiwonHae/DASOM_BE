@@ -23,6 +23,9 @@ public class RequestService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
     // 게시물별 신청 조회
     public List<Request> getPostId(Long postId) {
         Post post = postRepository.findByPostId(postId);
@@ -49,6 +52,9 @@ public class RequestService {
                 .post(post)
                 .build();
         requestRepository.save(request);
+
+        notificationService.saveRequest(request, NotificationKind.REQUEST);
+
         return request.getRequestId();
     }
 
