@@ -44,12 +44,11 @@ public class User extends BaseTimeEntity {
     private String univEmail;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
-
-    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Embedded
     private OAuthId oauthId;
+
+    private boolean active;
 
 }

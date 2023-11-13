@@ -2,7 +2,6 @@ package com.oss2.dasom.service;
 
 import com.oss2.dasom.config.MyAppProperties;
 import com.oss2.dasom.domain.NanoId;
-import com.oss2.dasom.domain.Role;
 import com.oss2.dasom.domain.User;
 import com.oss2.dasom.dto.GetUserResponse;
 import com.oss2.dasom.dto.SignUpRequest;
@@ -23,7 +22,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public GetUserResponse getUserInfo(String userId) {
-        User user = userRepository.findByUserId(NanoId.of(userId)).orElseThrow(() ->
+        User user = userRepository.findByUserIdAndActiveTrue(NanoId.of(userId)).orElseThrow(() ->
                 new IllegalArgumentException("올바르지 않은 회원입니다."));
         return GetUserResponse.builder()
                 .nickname(user.getNickname())
@@ -94,7 +93,7 @@ public class UserService {
         user.setNickname(signUpRequest.getNickname());
         user.setUnivEmail(signUpRequest.getUnivemail());
         user.setSchool(signUpRequest.getSchool());
-        user.setRole(Role.ROLE_USER);
+        user.setActive(true);
         userRepository.save(user);
     }
 

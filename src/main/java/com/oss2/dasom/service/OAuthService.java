@@ -23,6 +23,7 @@ public class OAuthService {
 
     public String login(OAuthServerProvider oAuthServerProvider, String authCode) {
         User user = oAuthMemberClientComposite.fetch(oAuthServerProvider, authCode);
+        user.setActive(false);
         User saved = userRepository.findByOauthId(user.getOauthId())
                 .orElseGet(() -> userRepository.save(user));
         return saved.getUserId().toString();

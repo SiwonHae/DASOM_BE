@@ -38,7 +38,6 @@ public record NaverMemberResponse(
     public User toDomain() {
         return User.builder()
                 .userId(NanoId.makeId())
-                .role(Role.ROLE_NOTUSER)
                 .oauthId(new OAuthId(String.valueOf(response.id), NAVER))
                 .email(response.email)
                 .realname(response.name)

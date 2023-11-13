@@ -38,7 +38,6 @@ public record KakaoMemberResponse(
     public User toDomain() {
         return User.builder()
                 .userId(NanoId.makeId())
-                .role(Role.ROLE_NOTUSER)
                 .oauthId(new OAuthId(String.valueOf(id), KAKAO))
                 .email(kakaoAccount().email)
                 .realname(kakaoAccount().name)

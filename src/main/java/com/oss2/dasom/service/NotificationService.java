@@ -28,7 +28,7 @@ public class NotificationService {
 
     @Transactional
     public List<GetRequestNotificationResponse> sendRequestNotification(String userId) {
-        User user = userRepository.findByUserId(NanoId.of(userId)).orElseThrow(() ->
+        User user = userRepository.findByUserIdAndActiveTrue(NanoId.of(userId)).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
 
         List<Notification> notifications = notificationRepository.findByRequest_Post_User_UserId(user.getUserId());
