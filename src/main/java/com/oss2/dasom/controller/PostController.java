@@ -1,5 +1,6 @@
 package com.oss2.dasom.controller;
 
+import com.oss2.dasom.domain.Gender;
 import com.oss2.dasom.domain.NanoId;
 import com.oss2.dasom.domain.Post;
 import com.oss2.dasom.dto.CreatePostRequest;
@@ -41,9 +42,29 @@ public class PostController {
 
     }
 
+    // 특정 사용자가 작성한 게시물 조회
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<GetPostResponse>> findPostByUser(@PathVariable String userId) {
+        List<GetPostResponse> posts = postService.getPostUserId(userId)
+                .stream()
+                .map(GetPostResponse::new)
+                .toList();
+        return ResponseEntity.ok().body(posts);
+    }
+
+    // 성별 필터 조회
+    @GetMapping("/{gender}")
+    public ResponseEntity<List<GetPostResponse>> findPostByGender(@PathVariable Gender gender) {
+        List<GetPostResponse> posts = postService.getPostGender(gender)
+                .stream()
+                .map(GetPostResponse::new)
+                .toList();
+        return ResponseEntity.ok().body(posts);
+    }
+
     // 게시물 상세 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<GetPostResponse> findPost(@PathVariable Long postId) {
+    public ResponseEntity<GetPostResponse> findPost(@PathVariable String postId) {
         GetPostResponse postResponse = new GetPostResponse(postService.getPostId(postId));
         return ResponseEntity.ok()
                 .body(postResponse);
@@ -58,14 +79,14 @@ public class PostController {
 
     // 게시물 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<Void> updatePost(@PathVariable Long postId, @RequestBody UpdatePostRequest request) {
+    public ResponseEntity<Void> updatePost(@PathVariable String postId, @RequestBody UpdatePostRequest request) {
         postService.updatePost(postId, request);
         return ResponseEntity.ok().build();
     }
 
-    // postId로 삭제
+    // 게시물 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
+    public ResponseEntity<Void> deletePost(@PathVariable String postId) {
         postService.deletePost(postId);
         return ResponseEntity.ok().build();
     }

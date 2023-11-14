@@ -1,5 +1,6 @@
 package com.oss2.dasom.service;
 
+import com.oss2.dasom.domain.Gender;
 import com.oss2.dasom.domain.NanoId;
 import com.oss2.dasom.domain.User;
 import com.oss2.dasom.dto.CreatePostRequest;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,19 +28,31 @@ public class PostService {
 
     // 모든 게시물 조회
     public Page<Post> getAllPosts(PageRequest pageRequest) {
-        return postRepository.findAll(pageRequest);
+        return postRepository.findAllOrderByCreatedDateDesc(pageRequest);
     }
 
     // 게시물 상세조회
-    public Post getPostId(Long postId) {
-        return postRepository.findById(postId).orElse(null);
+    public Post getPostId(String postId) {
+        return postRepository.findByPostId(NanoId.of(postId));
+    }
+
+    // 특정 사용자가 작성한 게시물 조회
+    public List<Post> getPostUserId(String userId) {
+        List<Post> posts = postRepository.findByUserId(NanoId.of(userId)).orElse(null);
+        return posts;
+    }
+
+    // 모집 성별 필터 조회
+    public List<Post> getPostGender(Gender gender) {
+        List<Post> posts = postRepository.findByGender(gender).orElse(null);
+        return  posts;
     }
 
     // 모집 게시물 등록
+    @Transactional
     public NanoId createPost(CreatePostRequest dto) {
         User user = userRepository.findByUserId(dto.getUserId()).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
-        ;
 
         Post post = Post.builder().title(dto.getTitle())
                 .content(dto.getContent())
@@ -52,8 +66,8 @@ public class PostService {
     }
 
     // 게시물 수정
-    public void updatePost(Long postId, UpdatePostRequest dto) {
-        Post post = postRepository.findById(postId).orElse(null);
+    public void updatePost(String postId, UpdatePostRequest dto) {
+        Post post = postRepository.findByPostId(NanoId.of(postId));
         post.setTitle(dto.getTitle());
         post.setContent(dto.getContent());
         post.setOpenKakaoAddress(dto.getOpenKakaoAddress());
@@ -64,8 +78,8 @@ public class PostService {
     }
 
     // 게시물 삭제
-    public void deletePost(Long postId) {
-        Post post = postRepository.findById(postId).orElse(null);
+    public void deletePost(String postId) {
+        Post post = postRepository.findByPostId(NanoId.of(postId));
         postRepository.delete(post);
         return;
     }
