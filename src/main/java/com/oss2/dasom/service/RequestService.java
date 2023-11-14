@@ -24,7 +24,7 @@ public class RequestService {
     private UserRepository userRepository;
 
     // 게시물별 신청 조회
-    public List<Request> getPostId(Long postId) {
+    public List<Request> getPostId(NanoId postId) {
         Post post = postRepository.findByPostId(postId);
         List<Request> requests = requestRepository.findByPost(post);
         return requests;
@@ -39,7 +39,7 @@ public class RequestService {
     }
 
     // 신청 등록
-    public Long createRequest(CreateRequestRequest dto) {
+    public NanoId createRequest(CreateRequestRequest dto) {
         User user = userRepository.findByUserId(dto.getUserId()).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않은 회원입니다."));;
         Post post = postRepository.findByPostId(dto.getPostId());
@@ -53,7 +53,7 @@ public class RequestService {
     }
 
     // 신청 수정 (제목, 내용만 수정 가능)
-    public void updateRequest(Long requestId, UpdateRequestRequest dto) {
+    public void updateRequest(NanoId requestId, UpdateRequestRequest dto) {
         Request request = requestRepository.findByRequestId(requestId);
         request.setTitle(dto.getTitle());
         request.setContent(dto.getContent());
@@ -61,13 +61,13 @@ public class RequestService {
     }
 
     // 신청 삭제
-    public void deleteRequest(Long requestId) {
+    public void deleteRequest(NanoId requestId) {
         Request request = requestRepository.findByRequestId(requestId);
         requestRepository.delete(request);
     }
 
     // 신청 결과 설정
-    public void updateRequestResult(Long requestId, Result result) {
+    public void updateRequestResult(NanoId requestId, Result result) {
         Request request = requestRepository.findByRequestId(requestId);
         request.setResult(result);
         requestRepository.save(request);

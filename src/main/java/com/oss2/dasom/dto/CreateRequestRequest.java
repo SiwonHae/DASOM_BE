@@ -9,5 +9,5 @@ public class CreateRequestRequest {
     private String title;
     private String content;
     private NanoId userId;
-    private Long postId;
+    private NanoId postId;
 }

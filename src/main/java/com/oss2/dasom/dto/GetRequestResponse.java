@@ -9,14 +9,14 @@ import java.time.LocalDateTime;
 
 @Getter
 public class GetRequestResponse {
-    private Long requestId;
+    private NanoId requestId;
     private String title;
     private String content;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private Result result;
     private NanoId userId;
-    private Long postId;
+    private NanoId postId;
 
     public GetRequestResponse(Request request) {
         this.requestId = request.getRequestId();
