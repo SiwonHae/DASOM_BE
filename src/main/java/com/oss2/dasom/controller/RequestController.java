@@ -25,7 +25,7 @@ public class RequestController {
 
     // postId별 신청 조회
     @GetMapping("/post/{postId}")
-    public ResponseEntity<List<GetRequestResponse>> findRequestByPost(@PathVariable Long postId) {
+    public ResponseEntity<List<GetRequestResponse>> findRequestByPost(@PathVariable NanoId postId) {
         List<GetRequestResponse> requests = requestService.getPostId(postId)
                 .stream()
                 .map(GetRequestResponse::new)
@@ -46,28 +46,28 @@ public class RequestController {
     // 신청 등록
     @PostMapping
     public ResponseEntity createRequest(@RequestBody CreateRequestRequest request) {
-        Long requestId = requestService.createRequest(request);
+        NanoId requestId = requestService.createRequest(request);
         return new ResponseEntity<>(requestId, HttpStatus.CREATED);
     }
 
     // 신청 수정
     @PutMapping("/{requestId}")
-    public ResponseEntity<Void> updateRequest(@PathVariable Long requestId, @RequestBody UpdateRequestRequest request) {
-        requestService.updateRequest(requestId, request);
+    public ResponseEntity<Void> updateRequest(@PathVariable String requestId, @RequestBody UpdateRequestRequest request) {
+        requestService.updateRequest(NanoId.of(requestId), request);
         return ResponseEntity.ok().build();
     }
 
     // 신청 삭제
     @DeleteMapping("/{requestId}")
-    public ResponseEntity<Void> deleteRequest(@PathVariable Long requestId) {
-        requestService.deleteRequest(requestId);
+    public ResponseEntity<Void> deleteRequest(@PathVariable String requestId) {
+        requestService.deleteRequest(NanoId.of(requestId));
         return ResponseEntity.ok().build();
     }
 
     // 신청 수락/거절
     @PutMapping("/result/{requestId}")
-    public ResponseEntity<Void> updateRequestResult(@PathVariable Long requestId, @RequestParam Result result) {
-        requestService.updateRequestResult(requestId, result);
+    public ResponseEntity<Void> updateRequestResult(@PathVariable String requestId, @RequestParam Result result) {
+        requestService.updateRequestResult(NanoId.of(requestId) , result);
         return ResponseEntity.ok().build();
     }
 }

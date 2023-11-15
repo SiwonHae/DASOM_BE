@@ -10,9 +10,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Request extends BaseTimeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long requestId;
+
+    @EmbeddedId
+    @AttributeOverride(name ="id",column = @Column(name = "request_id"))
+    private NanoId requestId;
 
     private String title;
     private String content;

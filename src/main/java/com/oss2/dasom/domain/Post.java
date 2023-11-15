@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class Post extends BaseTimeEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postId;
+    @EmbeddedId
+    @AttributeOverride(name ="id",column = @Column(name = "post_id"))
+    private NanoId postId;
 
     private String title;
     private String content;
