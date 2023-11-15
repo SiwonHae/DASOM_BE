@@ -5,6 +5,7 @@ import com.oss2.dasom.domain.NanoId;
 import com.oss2.dasom.domain.User;
 import com.oss2.dasom.dto.GetUserResponse;
 import com.oss2.dasom.dto.SignUpRequest;
+import com.oss2.dasom.dto.UpdateUserRequest;
 import com.oss2.dasom.repository.UserRepository;
 import com.univcert.api.UnivCert;
 import lombok.RequiredArgsConstructor;
@@ -75,6 +76,7 @@ public class UserService {
         return cert;
     }
 
+    @Transactional
     public Map<String, Object> verifyUnivEmailCode(SignUpRequest signUpRequest) throws IOException {
         String key = myAppProperties.getApi_key();
         String email = signUpRequest.getUnivemail();
@@ -82,18 +84,47 @@ public class UserService {
         int verifyCode = signUpRequest.getInputVerifyCode();
 
         Map<String, Object> cert = UnivCert.certifyCode(key, email, univName, verifyCode);
+
+        User user = userRepository.findByUserId(NanoId.of(signUpRequest.getUserId())).orElseThrow(() ->
+                new IllegalArgumentException("존재하지 않은 회원입니다."));
+        user.setEmailCheck(true);
+        userRepository.save(user);
+
         return cert;
     }
 
+    @Transactional
     public void createUser(SignUpRequest signUpRequest) {
 
         User user = userRepository.findByUserId(NanoId.of(signUpRequest.getUserId())).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
 
+        if (!user.isEmailCheck()) {
+            throw new IllegalArgumentException("이메일 인증이 되지 않은 회원입니다.");
+        }
+
+        if (userRepository.existsByNickname(signUpRequest.getNickname())) {
+            throw new IllegalArgumentException("중복된 닉네임이 존재합니다.");
+        }
+
         user.setNickname(signUpRequest.getNickname());
         user.setUnivEmail(signUpRequest.getUnivemail());
         user.setSchool(signUpRequest.getSchool());
         user.setActive(true);
+
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updateUser(String userId, UpdateUserRequest updateUserRequest) {
+        User user = userRepository.findByUserId(NanoId.of(userId)).orElseThrow(() ->
+                new IllegalArgumentException("존재하지 않은 회원입니다."));
+
+        if (userRepository.existsByNickname(updateUserRequest.getNickname())) {
+            throw new IllegalArgumentException("중복된 닉네임이 존재합니다.");
+        }
+
+        user.setNickname(updateUserRequest.getNickname());
         userRepository.save(user);
     }
 
@@ -102,8 +133,13 @@ public class UserService {
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
 
         String key = myAppProperties.getApi_key();
+        UnivCert.clear(key); // 배포시 삭제할 내용
         UnivCert.clear(key, user.getUnivEmail());
 
         userRepository.deleteById(NanoId.of(userId));
+    }
+
+    public boolean checkNicknameDuplicate(String nickname) {
+        return userRepository.existsByNickname(nickname);
     }
 }

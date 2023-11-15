@@ -2,8 +2,8 @@ package com.oss2.dasom.controller;
 
 import com.oss2.dasom.dto.GetUserResponse;
 import com.oss2.dasom.dto.SignUpRequest;
+import com.oss2.dasom.dto.UpdateUserRequest;
 import com.oss2.dasom.service.UserService;
-import com.univcert.api.UnivCert;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +26,17 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable String userId) throws IOException {
         userService.deleteUser(userId);
+        return ResponseEntity.ok().body(true);
+    }
+
+    @GetMapping("/nickname/{nickname}")
+    public ResponseEntity<?> checkNicknameDuplicate(@PathVariable String nickname) {
+        return ResponseEntity.ok().body(userService.checkNicknameDuplicate(nickname));
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<?> updateUser(@PathVariable String userId, @RequestBody UpdateUserRequest updateUserRequest) {
+        userService.updateUser(userId, updateUserRequest);
         return ResponseEntity.ok().body(true);
     }
 

@@ -31,6 +31,7 @@ public class User extends BaseTimeEntity {
     @AttributeOverride(name ="id",column = @Column(name = "user_id"))
     private NanoId userId;
 
+    @Column(unique = true)
     public String nickname;
 
     public String school;
@@ -50,5 +51,7 @@ public class User extends BaseTimeEntity {
     private OAuthId oauthId;
 
     private boolean active;
+
+    private boolean emailCheck;
 
 }
