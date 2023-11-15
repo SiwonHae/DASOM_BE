@@ -3,15 +3,18 @@ package com.oss2.dasom.dto;
 import com.oss2.dasom.domain.Gender;
 import com.oss2.dasom.domain.NanoId;
 import com.oss2.dasom.domain.Number;
+import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
-public class UpdatePostRequest {
+@Builder
+public class PageResponse {
     private String title;
-    private String content;
-    private String openKakaoAddress;
-    private String alcohol;
+    private LocalDateTime createdDate;
+    private String nickname;
     private Number number;
     private Gender gender;
-    private NanoId userId;
+    private NanoId postId;
 }
