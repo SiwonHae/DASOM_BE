@@ -20,10 +20,4 @@ public class NotificationController {
         List<GetRequestNotificationResponse> getRequestNotificationResponse = notificationService.sendRequestNotification(userId);
         return ResponseEntity.ok().body(getRequestNotificationResponse);
     }
-
-    @DeleteMapping("/{notificationId}")
-    public ResponseEntity<?> deleteNotification(@RequestBody String userId, @PathVariable String notificationId) {
-        notificationService.deleteNotification(userId, notificationId);
-        return ResponseEntity.ok().body(true);
-    }
 }

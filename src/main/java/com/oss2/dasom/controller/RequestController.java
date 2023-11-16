@@ -23,15 +23,15 @@ public class RequestController {
 
     // postId별 신청 조회
     @GetMapping("/post/{postId}")
-    public ResponseEntity<?> findRequestByPost(@PathVariable NanoId postId, @RequestBody UserIdRequest userIdRequest, Pageable pageable) {
-        Page<RequestPageResponse> requests = requestService.getPostId(postId, NanoId.of(userIdRequest.getUserId()), pageable);
+    public ResponseEntity<?> findRequestByPost(@PathVariable String postId, Pageable pageable) {
+        Page<RequestPageResponse> requests = requestService.getPostId(postId, pageable);
         return ResponseEntity.ok().body(requests);
     }
 
     // userId별 신청 조회
-    @GetMapping("/user")
-    public ResponseEntity<?> findRequestByUser(@RequestBody UserIdRequest userIdRequest, Pageable pageable) {
-        Page<RequestPageResponse> requests = requestService.getUserId(NanoId.of(userIdRequest.getUserId()), pageable);
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> findRequestByUser(@PathVariable String userId, Pageable pageable) {
+        Page<RequestPageResponse> requests = requestService.getUserId(userId, pageable);
         return ResponseEntity.ok().body(requests);
     }
 
@@ -50,9 +50,9 @@ public class RequestController {
     }
 
     // 신청 삭제
-    @DeleteMapping("/{requestId}")
+    @PostMapping("/{requestId}")
     public ResponseEntity<Void> deleteRequest(@PathVariable String requestId, @RequestBody UserIdRequest userIdRequest) {
-        requestService.deleteRequest(NanoId.of(requestId), NanoId.of(userIdRequest.getUserId()));
+        requestService.deleteRequest(requestId, userIdRequest);
         return ResponseEntity.ok().build();
     }
 

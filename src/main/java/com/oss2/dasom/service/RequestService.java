@@ -4,6 +4,7 @@ import com.oss2.dasom.domain.*;
 import com.oss2.dasom.dto.CreateRequestRequest;
 import com.oss2.dasom.dto.RequestPageResponse;
 import com.oss2.dasom.dto.UpdateRequestRequest;
+import com.oss2.dasom.dto.UserIdRequest;
 import com.oss2.dasom.repository.PostRepository;
 import com.oss2.dasom.repository.RequestRepository;
 import com.oss2.dasom.repository.UserRepository;
@@ -32,12 +33,15 @@ public class RequestService {
     private NotificationService notificationService;
 
     // 게시물별 신청 조회
-    public Page<RequestPageResponse> getPostId(NanoId postId, NanoId userId, Pageable pageable) {
+    public Page<RequestPageResponse> getPostId(String postId, Pageable pageable) {
+        Post post = postRepository.findByPostId(NanoId.of(postId));
+        if (post == null) {
+            throw new IllegalArgumentException("존재하지 않는 글입니다.");
+        }
 
-        User user = userRepository.findByUserIdAndActiveTrue(userId).orElseThrow(() ->
+        User user = userRepository.findByUserIdAndActiveTrue(post.getUser().getUserId()).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
 
-        Post post = postRepository.findByPostId(postId);
         Page<Request> requestPage = requestRepository.findByPost(post, pageable);
         return requestPage.map(request -> RequestPageResponse.builder()
                 .title(request.getTitle())
@@ -53,9 +57,9 @@ public class RequestService {
     }
 
     // 사용자별 신청 조회
-    public Page<RequestPageResponse> getUserId(NanoId userId, Pageable pageable) {
+    public Page<RequestPageResponse> getUserId(String userId, Pageable pageable) {
 
-        User user = userRepository.findByUserIdAndActiveTrue(userId).orElseThrow(() ->
+        User user = userRepository.findByUserIdAndActiveTrue(NanoId.of(userId)).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
 
         Page<Request> requestPage = requestRepository.findByUser(user, pageable);
@@ -79,6 +83,9 @@ public class RequestService {
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
 
         Post post = postRepository.findByPostId(dto.getPostId());
+        if (post == null) {
+            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+        }
 
         List<Request> requestList = requestRepository.findByPost(post);
 
@@ -123,8 +130,12 @@ public class RequestService {
     }
 
     // 신청 수정 (제목, 내용만 수정 가능)
+    @Transactional
     public void updateRequest(NanoId requestId, UpdateRequestRequest dto) {
         Request request = requestRepository.findByRequestId(requestId);
+        if (request == null) {
+            throw new IllegalArgumentException("존재하지 않는 신청입니다.");
+        }
 
         if (!dto.getUserId().toString().equals(request.getUser().getUserId().toString())) {
             throw new IllegalArgumentException("신청자만 수정/삭제 가능합니다.");
@@ -136,20 +147,22 @@ public class RequestService {
     }
 
     // 신청 삭제
-    public void deleteRequest(NanoId requestId, NanoId userId) {
-        Request request = requestRepository.findByRequestId(requestId);
+    public void deleteRequest(String requestId, UserIdRequest userIdRequest) {
+        Request request = requestRepository.findByRequestId(NanoId.of(requestId));
 
         if (request.getResult() == Result.YES) {
             throw new IllegalArgumentException("이미 수락된 신청은 삭제할 수 없습니다.");
         }
 
-        if (!userId.toString().equals(request.getUser().getUserId().toString())) {
+        if (!userIdRequest.getUserId().equals(request.getUser().getUserId().toString())) {
             throw new IllegalArgumentException("신청자만 수정/삭제 가능합니다.");
         }
+
         requestRepository.delete(request);
     }
 
     // 신청 결과 설정
+    @Transactional
     public void updateRequestResult(NanoId requestId, Result result, NanoId userId) {
         Request request = requestRepository.findByRequestId(requestId);
 

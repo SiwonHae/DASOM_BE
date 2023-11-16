@@ -27,10 +27,7 @@ public class PostService {
     private UserRepository userRepository;
 
     // 모든 게시물 조회 (마감 안된 게시물만)
-    public Page<PageResponse> getAllPosts(UserIdRequest userIdRequest, Pageable pageable) {
-        User user = userRepository.findByUserIdAndActiveTrue(NanoId.of(userIdRequest.getUserId())).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않은 회원입니다."));
-
+    public Page<PageResponse> getAllPosts(Pageable pageable) {
         Page<Post> postPage = postRepository.findAllByActive(true, pageable);
 
         return postPage.map(post-> PageResponse.builder()
@@ -45,16 +42,20 @@ public class PostService {
     }
 
     // 게시물 상세조회
-    public Post getPostId(UserIdRequest userIdRequest, String postId) {
-        User user = userRepository.findByUserId(NanoId.of(userIdRequest.getUserId())).orElseThrow(()->
-                new IllegalArgumentException("존재하지 않은 회원입니다."));
+    public Post getPostId(String postId) {
+        Post post = postRepository.findByPostId(NanoId.of(postId));
+        if (post == null) {
+            throw new IllegalArgumentException("존재하지 않는 게시글 입니다.");
+        }
+
         return postRepository.findByPostId(NanoId.of(postId));
     }
 
     // 특정 사용자가 작성한 게시물 조회
-    public Page<PageResponse> getPostUserId(UserIdRequest userIdRequest, Pageable pageable) {
-        User user = userRepository.findByUserId(NanoId.of(userIdRequest.getUserId())).orElseThrow(()->
+    public Page<PageResponse> getPostUserId(String userId, Pageable pageable) {
+        User user = userRepository.findByUserIdAndActiveTrue(NanoId.of(userId)).orElseThrow(()->
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
+
         Page<Post> postPage = postRepository.findByUser(user, pageable).get();
         return postPage.map(post-> PageResponse.builder()
                 .title(post.getTitle())
@@ -68,9 +69,7 @@ public class PostService {
     }
 
     // 모집 성별 필터 조회
-    public Page<PageResponse> getPostGender(UserIdRequest userIdRequest, Gender gender, Pageable pageable) {
-        User user = userRepository.findByUserIdAndActiveTrue(NanoId.of(userIdRequest.getUserId())).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않은 회원입니다."));
+    public Page<PageResponse> getPostGender(Gender gender, Pageable pageable) {
 
         Page<Post> postPage = postRepository.findByGenderAndActive(gender, true, pageable).orElse(null);
         return postPage.map(post-> PageResponse.builder()
@@ -105,6 +104,7 @@ public class PostService {
     }
 
     // 게시물 수정
+    @Transactional
     public void updatePost(String postId, UpdatePostRequest dto) {
         User user = userRepository.findByUserIdAndActiveTrue(dto.getUserId()).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
@@ -124,11 +124,8 @@ public class PostService {
 
     // 게시물 삭제
     public void deletePost(String postId, UserIdRequest userIdRequest) {
-        User user = userRepository.findByUserIdAndActiveTrue(NanoId.of(userIdRequest.getUserId())).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않은 회원입니다."));
-
         Post post = postRepository.findByPostId(NanoId.of(postId));
-        if (!userIdRequest.getUserId().toString().equals(post.getUser().getUserId().toString())) {
+        if (!userIdRequest.getUserId().equals(post.getUser().getUserId().toString())) {
             throw new IllegalArgumentException("작성자만 수정/삭제 가능합니다.");
         }
         postRepository.delete(post);

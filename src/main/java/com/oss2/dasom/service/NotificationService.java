@@ -26,13 +26,6 @@ public class NotificationService {
                 .build());
     }
 
-    public void deleteNotification(String userId, String notificationId) {
-        User user = userRepository.findByUserIdAndActiveTrue(NanoId.of(userId)).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않은 회원입니다."));
-
-        notificationRepository.deleteById(NanoId.of(notificationId));
-    }
-
     @Transactional
     public List<GetRequestNotificationResponse> sendRequestNotification(String userId) {
         User user = userRepository.findByUserIdAndActiveTrue(NanoId.of(userId)).orElseThrow(() ->

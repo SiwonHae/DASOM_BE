@@ -24,29 +24,29 @@ public class PostController {
 
     // 모든 게시물 조회
     @GetMapping
-    public ResponseEntity<?> findAllPosts(@RequestBody UserIdRequest userIdRequest, Pageable pageable) {
-        Page<PageResponse> postPage = postService.getAllPosts(userIdRequest, pageable);
+    public ResponseEntity<?> findAllPosts(Pageable pageable) {
+        Page<PageResponse> postPage = postService.getAllPosts(pageable);
             return ResponseEntity.ok().body(postPage);
     }
 
     // 특정 사용자가 작성한 게시물 조회
-    @GetMapping("/user")
-    public ResponseEntity<?> findPostByUser(@RequestBody UserIdRequest userIdRequest, Pageable pageable) {
-        Page<PageResponse> postPage = postService.getPostUserId(userIdRequest, pageable);
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> findPostByUser(@PathVariable String userId, Pageable pageable) {
+        Page<PageResponse> postPage = postService.getPostUserId(userId, pageable);
         return ResponseEntity.ok().body(postPage);
     }
 
     // 성별 필터 조회
     @GetMapping("/gender/{gender}")
-    public ResponseEntity<?> findPostByGender(@RequestBody UserIdRequest userIdRequest, @PathVariable Gender gender, Pageable pageable) {
-        Page<PageResponse> postPage = postService.getPostGender(userIdRequest, gender, pageable);
+    public ResponseEntity<?> findPostByGender(@PathVariable Gender gender, Pageable pageable) {
+        Page<PageResponse> postPage = postService.getPostGender(gender, pageable);
         return ResponseEntity.ok().body(postPage);
     }
 
     // 게시물 상세 조회
     @GetMapping("/detail/{postId}")
-    public ResponseEntity<GetPostResponse> findPost(@RequestBody UserIdRequest userIdRequest, @PathVariable String postId) {
-        GetPostResponse postResponse = new GetPostResponse(postService.getPostId(userIdRequest ,postId));
+    public ResponseEntity<GetPostResponse> findPost(@PathVariable String postId) {
+        GetPostResponse postResponse = new GetPostResponse(postService.getPostId(postId));
         return ResponseEntity.ok()
                 .body(postResponse);
     }
@@ -66,7 +66,7 @@ public class PostController {
     }
 
     // 게시물 삭제
-    @DeleteMapping("/{postId}")
+    @PostMapping("/{postId}")
     public ResponseEntity<Void> deletePost(@PathVariable String postId, @RequestBody UserIdRequest userIdRequest) {
         postService.deletePost(postId, userIdRequest);
         return ResponseEntity.ok().build();
