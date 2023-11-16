@@ -16,4 +16,6 @@ public class RequestPageResponse {
     private Result result;
     private String nickname;
     private NanoId requestId;
+    private NanoId userId;
+    private NanoId postId;
 }

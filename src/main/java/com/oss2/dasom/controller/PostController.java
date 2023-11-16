@@ -3,10 +3,7 @@ package com.oss2.dasom.controller;
 import com.oss2.dasom.domain.Gender;
 import com.oss2.dasom.domain.NanoId;
 import com.oss2.dasom.domain.Post;
-import com.oss2.dasom.dto.CreatePostRequest;
-import com.oss2.dasom.dto.GetPostResponse;
-import com.oss2.dasom.dto.PageResponse;
-import com.oss2.dasom.dto.UpdatePostRequest;
+import com.oss2.dasom.dto.*;
 import com.oss2.dasom.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,21 +30,21 @@ public class PostController {
     }
 
     // 특정 사용자가 작성한 게시물 조회
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<?> findPostByUser(@PathVariable String userId, Pageable pageable) {
         Page<PageResponse> postPage = postService.getPostUserId(userId, pageable);
         return ResponseEntity.ok().body(postPage);
     }
 
     // 성별 필터 조회
-    @GetMapping("/{gender}")
+    @GetMapping("/gender/{gender}")
     public ResponseEntity<?> findPostByGender(@PathVariable Gender gender, Pageable pageable) {
         Page<PageResponse> postPage = postService.getPostGender(gender, pageable);
         return ResponseEntity.ok().body(postPage);
     }
 
     // 게시물 상세 조회
-    @GetMapping("/{postId}")
+    @GetMapping("/detail/{postId}")
     public ResponseEntity<GetPostResponse> findPost(@PathVariable String postId) {
         GetPostResponse postResponse = new GetPostResponse(postService.getPostId(postId));
         return ResponseEntity.ok()
@@ -70,8 +67,8 @@ public class PostController {
 
     // 게시물 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable String postId, @RequestBody NanoId userId) {
-        postService.deletePost(postId, userId);
+    public ResponseEntity<Void> deletePost(@PathVariable String postId, @RequestBody UserIdRequest userIdRequest) {
+        postService.deletePost(postId, NanoId.of(userIdRequest.getUserId()));
         return ResponseEntity.ok().build();
     }
 

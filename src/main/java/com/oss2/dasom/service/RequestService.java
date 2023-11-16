@@ -11,10 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class RequestService {
 
     @Autowired
@@ -40,6 +42,8 @@ public class RequestService {
                 .result(request.getResult())
                 .nickname(request.getUser().getNickname())
                 .requestId(request.getRequestId())
+                .userId(request.getUser().getUserId())
+                .postId(request.getPost().getPostId())
                 .build()
         );
     }
@@ -47,7 +51,8 @@ public class RequestService {
     // 사용자별 신청 조회
     public Page<RequestPageResponse> getUserId(NanoId userId, Pageable pageable) {
         User user = userRepository.findByUserId(userId).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않은 회원입니다."));;
+                new IllegalArgumentException("존재하지 않은 회원입니다."));
+
         Page<Request> requestPage = requestRepository.findByUser(user, pageable);
         return requestPage.map(request -> RequestPageResponse.builder()
                 .title(request.getTitle())
@@ -56,6 +61,8 @@ public class RequestService {
                 .result(request.getResult())
                 .nickname(request.getUser().getNickname())
                 .requestId(request.getRequestId())
+                .userId(request.getUser().getUserId())
+                .postId(request.getPost().getPostId())
                 .build()
         );
     }
@@ -63,8 +70,22 @@ public class RequestService {
     // 신청 등록
     public NanoId createRequest(CreateRequestRequest dto) {
         User user = userRepository.findByUserId(dto.getUserId()).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않은 회원입니다."));;
+                new IllegalArgumentException("존재하지 않은 회원입니다."));
+
         Post post = postRepository.findByPostId(dto.getPostId());
+
+        List<Request> requestList = requestRepository.findByPost(post);
+        for (Request request : requestList) {
+            // 이미 수락한 신청이 있다면 신청 불가
+            if (request.getResult() == Result.YES) {
+                throw new IllegalArgumentException("이미 마감된 모집 게시물입니다.");
+            }
+            // 이미 신청한 게시물은 신청 불가
+            if (request.getUser().getUserId().toString().equals(user.getUserId().toString())) {
+                throw new IllegalArgumentException("이미 신청한 내역이 있습니다.");
+            }
+        }
+
         Request request = Request.builder()
                 .requestId(NanoId.makeId())
                 .title(dto.getTitle())
@@ -72,6 +93,7 @@ public class RequestService {
                 .user(user)
                 .post(post)
                 .build();
+
         requestRepository.save(request);
 
         notificationService.saveRequest(request, NotificationKind.REQUEST);
@@ -95,6 +117,11 @@ public class RequestService {
     // 신청 삭제
     public void deleteRequest(NanoId requestId, NanoId userId) {
         Request request = requestRepository.findByRequestId(requestId);
+
+        if (request.getResult() == Result.YES) {
+            throw new IllegalArgumentException("이미 수락된 신청은 삭제할 수 없습니다.");
+        }
+
         if (!userId.toString().equals(request.getUser().getUserId().toString())) {
             throw new IllegalArgumentException("신청자만 수정/삭제 가능합니다.");
         }
@@ -102,14 +129,31 @@ public class RequestService {
     }
 
     // 신청 결과 설정
-    public void updateRequestResult(NanoId requestId, Result result) {
+    public void updateRequestResult(NanoId requestId, Result result, NanoId userId) {
         Request request = requestRepository.findByRequestId(requestId);
+
+        Post post = postRepository.findByPostId(request.getPost().getPostId());
+        System.out.println(post.getUser().getUserId());
+        System.out.println(userId.toString());
+
+        if (!post.getUser().getUserId().toString().equals(userId.toString())) {
+
+            throw new IllegalArgumentException("게시물 작성자만 수락/거절 할 수 있습니다.");
+        }
+
+        if (!post.isActive()) {
+            throw new IllegalArgumentException("이미 수락한 신청이 있습니다.");
+        }
+
         request.setResult(result);
         requestRepository.save(request);
-        if(request.getResult() == Result.YES) {
+
+        if (request.getResult() == Result.YES) {
             notificationService.saveRequest(request, NotificationKind.YES);
-        }
-        else {
+
+            // 마감 처리
+            post.setActive(false);
+        } else {
             notificationService.saveRequest(request, NotificationKind.NO);
         }
     }
