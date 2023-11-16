@@ -5,19 +5,15 @@ import com.oss2.dasom.domain.NanoId;
 import com.oss2.dasom.domain.Post;
 import com.oss2.dasom.domain.User;
 import com.oss2.dasom.dto.CreatePostRequest;
-import com.oss2.dasom.dto.GetPostResponse;
 import com.oss2.dasom.dto.PageResponse;
 import com.oss2.dasom.dto.UpdatePostRequest;
 import com.oss2.dasom.repository.PostRepository;
 import com.oss2.dasom.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -28,9 +24,10 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
 
-    // 모든 게시물 조회
+    // 모든 게시물 조회 (마감 안된 게시물만)
     public Page<PageResponse> getAllPosts(Pageable pageable) {
-        Page<Post> postPage = postRepository.findAll(pageable);
+        Page<Post> postPage = postRepository.findAllByActive(true, pageable);
+
         return postPage.map(post-> PageResponse.builder()
                 .title(post.getTitle())
                 .createdDate(post.getCreatedDate())
@@ -65,7 +62,7 @@ public class PostService {
 
     // 모집 성별 필터 조회
     public Page<PageResponse> getPostGender(Gender gender, Pageable pageable) {
-        Page<Post> postPage = postRepository.findByGender(gender, pageable).orElse(null);
+        Page<Post> postPage = postRepository.findByGenderAndActive(gender, true, pageable).orElse(null);
         return postPage.map(post-> PageResponse.builder()
                 .title(post.getTitle())
                 .createdDate(post.getCreatedDate())
@@ -78,7 +75,6 @@ public class PostService {
     }
 
     // 모집 게시물 등록
-    @Transactional
     public NanoId createPost(CreatePostRequest dto) {
         User user = userRepository.findByUserId(dto.getUserId()).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
@@ -91,6 +87,7 @@ public class PostService {
                 .alcohol(dto.getAlcohol())
                 .user(user)
                 .number(dto.getNumber())
+                .active(true)
                 .gender(dto.getGender()).build();
 
         postRepository.save(post);

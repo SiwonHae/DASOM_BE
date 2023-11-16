@@ -22,6 +22,12 @@ public class Post extends BaseTimeEntity {
     private String openKakaoAddress;
     private String alcohol;
 
+    private boolean active;
+
+    public boolean isActive() {
+        return active;
+    }
+
     @ManyToOne
     private User user;
 
