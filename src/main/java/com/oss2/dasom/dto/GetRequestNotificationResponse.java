@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Builder
 public record GetRequestNotificationResponse(
 
+        String notificationId,
         String requestName,
         String requestContent,
         LocalDateTime requestTime,

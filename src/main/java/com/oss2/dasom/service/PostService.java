@@ -7,6 +7,7 @@ import com.oss2.dasom.domain.User;
 import com.oss2.dasom.dto.CreatePostRequest;
 import com.oss2.dasom.dto.PageResponse;
 import com.oss2.dasom.dto.UpdatePostRequest;
+import com.oss2.dasom.dto.UserIdRequest;
 import com.oss2.dasom.repository.PostRepository;
 import com.oss2.dasom.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @Transactional
@@ -25,7 +27,10 @@ public class PostService {
     private UserRepository userRepository;
 
     // 모든 게시물 조회 (마감 안된 게시물만)
-    public Page<PageResponse> getAllPosts(Pageable pageable) {
+    public Page<PageResponse> getAllPosts(UserIdRequest userIdRequest, Pageable pageable) {
+        User user = userRepository.findByUserIdAndActiveTrue(NanoId.of(userIdRequest.getUserId())).orElseThrow(() ->
+                new IllegalArgumentException("존재하지 않은 회원입니다."));
+
         Page<Post> postPage = postRepository.findAllByActive(true, pageable);
 
         return postPage.map(post-> PageResponse.builder()
@@ -40,13 +45,15 @@ public class PostService {
     }
 
     // 게시물 상세조회
-    public Post getPostId(String postId) {
+    public Post getPostId(UserIdRequest userIdRequest, String postId) {
+        User user = userRepository.findByUserId(NanoId.of(userIdRequest.getUserId())).orElseThrow(()->
+                new IllegalArgumentException("존재하지 않은 회원입니다."));
         return postRepository.findByPostId(NanoId.of(postId));
     }
 
     // 특정 사용자가 작성한 게시물 조회
-    public Page<PageResponse> getPostUserId(String userId, Pageable pageable) {
-        User user = userRepository.findByUserId(NanoId.of(userId)).orElseThrow(()->
+    public Page<PageResponse> getPostUserId(UserIdRequest userIdRequest, Pageable pageable) {
+        User user = userRepository.findByUserId(NanoId.of(userIdRequest.getUserId())).orElseThrow(()->
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
         Page<Post> postPage = postRepository.findByUser(user, pageable).get();
         return postPage.map(post-> PageResponse.builder()
@@ -75,8 +82,8 @@ public class PostService {
     }
 
     // 모집 게시물 등록
-    public NanoId createPost(CreatePostRequest dto) {
-        User user = userRepository.findByUserId(dto.getUserId()).orElseThrow(() ->
+    public NanoId createPost(UserIdRequest userIdRequest, CreatePostRequest dto) {
+        User user = userRepository.findByUserIdAndActiveTrue(NanoId.of(userIdRequest.getUserId())).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
 
         Post post = Post.builder()
@@ -95,7 +102,9 @@ public class PostService {
     }
 
     // 게시물 수정
-    public void updatePost(String postId, UpdatePostRequest dto) {
+    public void updatePost(UserIdRequest userIdRequest, String postId, UpdatePostRequest dto) {
+        User user = userRepository.findByUserIdAndActiveTrue(NanoId.of(userIdRequest.getUserId())).orElseThrow(() ->
+                new IllegalArgumentException("존재하지 않은 회원입니다."));
 
         Post post = postRepository.findByPostId(NanoId.of(postId));
         if (!dto.getUserId().toString().equals(post.getUser().getUserId().toString())) {
@@ -111,9 +120,12 @@ public class PostService {
     }
 
     // 게시물 삭제
-    public void deletePost(String postId, NanoId userId) {
+    public void deletePost(String postId, UserIdRequest userIdRequest) {
+        User user = userRepository.findByUserIdAndActiveTrue(NanoId.of(userIdRequest.getUserId())).orElseThrow(() ->
+                new IllegalArgumentException("존재하지 않은 회원입니다."));
+
         Post post = postRepository.findByPostId(NanoId.of(postId));
-        if (!userId.toString().equals(post.getUser().getUserId().toString())) {
+        if (!userIdRequest.getUserId().toString().equals(post.getUser().getUserId().toString())) {
             throw new IllegalArgumentException("작성자만 수정/삭제 가능합니다.");
         }
         postRepository.delete(post);
