@@ -38,8 +38,8 @@ public class PostController {
 
     // 성별 필터 조회
     @GetMapping("/gender/{gender}")
-    public ResponseEntity<?> findPostByGender(@PathVariable Gender gender, Pageable pageable) {
-        Page<PageResponse> postPage = postService.getPostGender(gender, pageable);
+    public ResponseEntity<?> findPostByGender(@RequestBody UserIdRequest userIdRequest, @PathVariable Gender gender, Pageable pageable) {
+        Page<PageResponse> postPage = postService.getPostGender(userIdRequest, gender, pageable);
         return ResponseEntity.ok().body(postPage);
     }
 
@@ -53,15 +53,15 @@ public class PostController {
 
     // 게시물 작성
     @PostMapping
-    public ResponseEntity createPost(@RequestBody UserIdRequest userIdRequest, @RequestBody CreatePostRequest request) {
-        NanoId postId = postService.createPost(userIdRequest, request);
+    public ResponseEntity createPost(@RequestBody CreatePostRequest request) {
+        NanoId postId = postService.createPost(request);
         return new ResponseEntity<>(postId, HttpStatus.CREATED);
     }
 
     // 게시물 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<Void> updatePost(@RequestBody UserIdRequest userIdRequest, @PathVariable String postId, @RequestBody UpdatePostRequest request) {
-        postService.updatePost(userIdRequest, postId, request);
+    public ResponseEntity<Void> updatePost(@PathVariable String postId, @RequestBody UpdatePostRequest request) {
+        postService.updatePost(postId, request);
         return ResponseEntity.ok().build();
     }
 
