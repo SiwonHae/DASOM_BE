@@ -79,7 +79,7 @@ myapp:
 java -jar build/libs/{프로젝트명-버전}.jar
 ```
 
-## 라이선스
+## 🪪 라이선스
 &nbsp;This work is licensed under the MIT license.  
 &nbsp;이 작업물은 MIT 라이선스에 따라 라이선스가 부여되어 있습니다.
 
