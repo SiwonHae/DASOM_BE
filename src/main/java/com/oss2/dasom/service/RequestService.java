@@ -81,7 +81,22 @@ public class RequestService {
         Post post = postRepository.findByPostId(dto.getPostId());
 
         List<Request> requestList = requestRepository.findByPost(post);
+
+        // 자기 자신의 글에는 신청 불가
+        if (requestList.isEmpty()) {
+            Post dtoPost = postRepository.findByPostId(dto.getPostId());
+
+            if (dto.getUserId().equals(dtoPost.getUser().getUserId())) {
+                throw new IllegalArgumentException("본인의 글에는 신청을 할 수 없습니다.");
+            }
+        }
+
         for (Request request : requestList) {
+            // 자기 자신의 글에는 신청 불가
+            if (request.getPost().getUser().getUserId().equals(dto.getUserId())) {
+                throw new IllegalArgumentException("본인의 글에는 신청을 할 수 없습니다.");
+            }
+
             // 이미 수락한 신청이 있다면 신청 불가
             if (request.getResult() == Result.YES) {
                 throw new IllegalArgumentException("이미 마감된 모집 게시물입니다.");
