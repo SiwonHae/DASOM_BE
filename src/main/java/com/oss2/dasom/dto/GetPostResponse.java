@@ -4,9 +4,12 @@ import com.oss2.dasom.domain.Gender;
 import com.oss2.dasom.domain.NanoId;
 import com.oss2.dasom.domain.Number;
 import com.oss2.dasom.domain.Post;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
 
 @Getter
 public class GetPostResponse {
@@ -20,6 +23,8 @@ public class GetPostResponse {
     private String nickname;
     private Number number;
     private Gender gender;
+    private NanoId postId;
+
 
     public GetPostResponse(Post post) { // post 객체 받아서 GetPostResponse 객체 생성
         this.title = post.getTitle();
@@ -32,6 +37,7 @@ public class GetPostResponse {
         this.number = post.getNumber();
         this.gender = post.getGender();
         this.userId = post.getUser().getUserId();
+        this.postId = post.getPostId();
     }
 
 }

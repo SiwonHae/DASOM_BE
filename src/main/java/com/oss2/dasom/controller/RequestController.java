@@ -3,13 +3,12 @@ package com.oss2.dasom.controller;
 import com.oss2.dasom.domain.NanoId;
 import com.oss2.dasom.domain.Request;
 import com.oss2.dasom.domain.Result;
-import com.oss2.dasom.dto.CreateRequestRequest;
-import com.oss2.dasom.dto.GetRequestResponse;
-import com.oss2.dasom.dto.UpdatePostRequest;
-import com.oss2.dasom.dto.UpdateRequestRequest;
+import com.oss2.dasom.dto.*;
 import com.oss2.dasom.service.RequestService;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,21 +24,15 @@ public class RequestController {
 
     // postId별 신청 조회
     @GetMapping("/post/{postId}")
-    public ResponseEntity<List<GetRequestResponse>> findRequestByPost(@PathVariable NanoId postId) {
-        List<GetRequestResponse> requests = requestService.getPostId(postId)
-                .stream()
-                .map(GetRequestResponse::new)
-                .toList();
+    public ResponseEntity<?> findRequestByPost(@PathVariable NanoId postId, Pageable pageable) {
+        Page<RequestPageResponse> requests = requestService.getPostId(postId, pageable);
         return ResponseEntity.ok().body(requests);
     }
 
     // userId별 신청 조회
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<GetRequestResponse>> findRequestByUser(@PathVariable NanoId userId) {
-        List<GetRequestResponse> requests = requestService.getUserId(userId)
-                .stream()
-                .map(GetRequestResponse::new)
-                .toList();
+    public ResponseEntity<?> findRequestByUser(@PathVariable NanoId userId, Pageable pageable) {
+        Page<RequestPageResponse> requests = requestService.getUserId(userId, pageable);
         return ResponseEntity.ok().body(requests);
     }
 
@@ -59,8 +52,8 @@ public class RequestController {
 
     // 신청 삭제
     @DeleteMapping("/{requestId}")
-    public ResponseEntity<Void> deleteRequest(@PathVariable String requestId) {
-        requestService.deleteRequest(NanoId.of(requestId));
+    public ResponseEntity<Void> deleteRequest(@PathVariable String requestId, @RequestBody NanoId userId) {
+        requestService.deleteRequest(NanoId.of(requestId), userId);
         return ResponseEntity.ok().build();
     }
 
