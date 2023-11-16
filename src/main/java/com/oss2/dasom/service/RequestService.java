@@ -32,7 +32,11 @@ public class RequestService {
     private NotificationService notificationService;
 
     // 게시물별 신청 조회
-    public Page<RequestPageResponse> getPostId(NanoId postId, Pageable pageable) {
+    public Page<RequestPageResponse> getPostId(NanoId postId, NanoId userId, Pageable pageable) {
+
+        User user = userRepository.findByUserIdAndActiveTrue(userId).orElseThrow(() ->
+                new IllegalArgumentException("존재하지 않은 회원입니다."));
+
         Post post = postRepository.findByPostId(postId);
         Page<Request> requestPage = requestRepository.findByPost(post, pageable);
         return requestPage.map(request -> RequestPageResponse.builder()
@@ -50,7 +54,8 @@ public class RequestService {
 
     // 사용자별 신청 조회
     public Page<RequestPageResponse> getUserId(NanoId userId, Pageable pageable) {
-        User user = userRepository.findByUserId(userId).orElseThrow(() ->
+
+        User user = userRepository.findByUserIdAndActiveTrue(userId).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
 
         Page<Request> requestPage = requestRepository.findByUser(user, pageable);
@@ -69,7 +74,8 @@ public class RequestService {
 
     // 신청 등록
     public NanoId createRequest(CreateRequestRequest dto) {
-        User user = userRepository.findByUserId(dto.getUserId()).orElseThrow(() ->
+
+        User user = userRepository.findByUserIdAndActiveTrue(dto.getUserId()).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
 
         Post post = postRepository.findByPostId(dto.getPostId());
