@@ -17,6 +17,7 @@ public class UserController {
 
     private final UserService userService;
 
+    // 회원 정보
     @GetMapping("/{userId}")
     public ResponseEntity<?> userInfo(@PathVariable String userId) {
         GetUserResponse getUserResponse = userService.getUserInfo(userId);

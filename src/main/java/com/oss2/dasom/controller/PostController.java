@@ -24,15 +24,15 @@ public class PostController {
 
     // 모든 게시물 조회
     @GetMapping
-    public ResponseEntity<?> findAllPosts(Pageable pageable) {
-        Page<PageResponse> postPage = postService.getAllPosts(pageable);
+    public ResponseEntity<?> findAllPosts(@RequestBody UserIdRequest userIdRequest, Pageable pageable) {
+        Page<PageResponse> postPage = postService.getAllPosts(userIdRequest, pageable);
             return ResponseEntity.ok().body(postPage);
     }
 
     // 특정 사용자가 작성한 게시물 조회
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<?> findPostByUser(@PathVariable String userId, Pageable pageable) {
-        Page<PageResponse> postPage = postService.getPostUserId(userId, pageable);
+    @GetMapping("/user")
+    public ResponseEntity<?> findPostByUser(@RequestBody UserIdRequest userIdRequest, Pageable pageable) {
+        Page<PageResponse> postPage = postService.getPostUserId(userIdRequest, pageable);
         return ResponseEntity.ok().body(postPage);
     }
 
@@ -45,30 +45,30 @@ public class PostController {
 
     // 게시물 상세 조회
     @GetMapping("/detail/{postId}")
-    public ResponseEntity<GetPostResponse> findPost(@PathVariable String postId) {
-        GetPostResponse postResponse = new GetPostResponse(postService.getPostId(postId));
+    public ResponseEntity<GetPostResponse> findPost(@RequestBody UserIdRequest userIdRequest, @PathVariable String postId) {
+        GetPostResponse postResponse = new GetPostResponse(postService.getPostId(userIdRequest ,postId));
         return ResponseEntity.ok()
                 .body(postResponse);
     }
 
     // 게시물 작성
     @PostMapping
-    public ResponseEntity createPost(@RequestBody CreatePostRequest request) {
-        NanoId postId = postService.createPost(request);
+    public ResponseEntity createPost(@RequestBody UserIdRequest userIdRequest, @RequestBody CreatePostRequest request) {
+        NanoId postId = postService.createPost(userIdRequest, request);
         return new ResponseEntity<>(postId, HttpStatus.CREATED);
     }
 
     // 게시물 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<Void> updatePost(@PathVariable String postId, @RequestBody UpdatePostRequest request) {
-        postService.updatePost(postId, request);
+    public ResponseEntity<Void> updatePost(@RequestBody UserIdRequest userIdRequest, @PathVariable String postId, @RequestBody UpdatePostRequest request) {
+        postService.updatePost(userIdRequest, postId, request);
         return ResponseEntity.ok().build();
     }
 
     // 게시물 삭제
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(@PathVariable String postId, @RequestBody UserIdRequest userIdRequest) {
-        postService.deletePost(postId, NanoId.of(userIdRequest.getUserId()));
+        postService.deletePost(postId, userIdRequest);
         return ResponseEntity.ok().build();
     }
 

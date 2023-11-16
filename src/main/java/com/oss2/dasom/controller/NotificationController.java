@@ -1,14 +1,10 @@
 package com.oss2.dasom.controller;
 
 import com.oss2.dasom.dto.GetRequestNotificationResponse;
-import com.oss2.dasom.dto.GetUserResponse;
 import com.oss2.dasom.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +19,11 @@ public class NotificationController {
     public ResponseEntity<?> userInfo(@PathVariable String userId) {
         List<GetRequestNotificationResponse> getRequestNotificationResponse = notificationService.sendRequestNotification(userId);
         return ResponseEntity.ok().body(getRequestNotificationResponse);
+    }
+
+    @DeleteMapping("/{notificationId}")
+    public ResponseEntity<?> deleteNotification(@RequestBody String userId, @PathVariable String notificationId) {
+        notificationService.deleteNotification(userId, notificationId);
+        return ResponseEntity.ok().body(true);
     }
 }
