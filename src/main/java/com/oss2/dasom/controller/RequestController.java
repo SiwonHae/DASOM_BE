@@ -23,15 +23,15 @@ public class RequestController {
 
     // postId별 신청 조회
     @GetMapping("/post/{postId}")
-    public ResponseEntity<?> findRequestByPost(@PathVariable NanoId postId, Pageable pageable) {
-        Page<RequestPageResponse> requests = requestService.getPostId(postId, pageable);
+    public ResponseEntity<?> findRequestByPost(@PathVariable NanoId postId, @RequestBody UserIdRequest userIdRequest, Pageable pageable) {
+        Page<RequestPageResponse> requests = requestService.getPostId(postId, NanoId.of(userIdRequest.getUserId()), pageable);
         return ResponseEntity.ok().body(requests);
     }
 
     // userId별 신청 조회
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<?> findRequestByUser(@PathVariable NanoId userId, Pageable pageable) {
-        Page<RequestPageResponse> requests = requestService.getUserId(userId, pageable);
+    @GetMapping("/user")
+    public ResponseEntity<?> findRequestByUser(@RequestBody UserIdRequest userIdRequest, Pageable pageable) {
+        Page<RequestPageResponse> requests = requestService.getUserId(NanoId.of(userIdRequest.getUserId()), pageable);
         return ResponseEntity.ok().body(requests);
     }
 
