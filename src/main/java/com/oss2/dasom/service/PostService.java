@@ -1,7 +1,7 @@
 package com.oss2.dasom.service;
 
-import com.oss2.dasom.domain.*;
 import com.oss2.dasom.domain.Number;
+import com.oss2.dasom.domain.*;
 import com.oss2.dasom.dto.CreatePostRequest;
 import com.oss2.dasom.dto.PageResponse;
 import com.oss2.dasom.dto.UpdatePostRequest;
@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 

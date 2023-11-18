@@ -39,17 +39,10 @@ public class Post extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Number number;
 
-    // 모집 성별(?)
+    // 모집 성별
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    // 달린 신청
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<Request> requestList = new ArrayList<>();
 
-    public void addRequest(Request request) {
-        requestList.add(request);
-        request.setPost(this);
-    }
 }

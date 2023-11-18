@@ -22,7 +22,7 @@ public class Request extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Result result;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private User user;
 
     @ManyToOne
