@@ -23,7 +23,7 @@ public class PostController {
     @GetMapping
     public ResponseEntity<?> findAllPosts(Pageable pageable) {
         Page<PageResponse> postPage = postService.getAllPosts(pageable);
-            return ResponseEntity.ok().body(postPage);
+        return ResponseEntity.ok().body(postPage);
     }
 
     // 특정 사용자가 작성한 게시물 조회
@@ -53,6 +53,13 @@ public class PostController {
                                                        @RequestParam Number number,
                                                        Pageable pageable) {
         Page<PageResponse> postPage = postService.getPostGenderAndNumber(gender, number, pageable);
+        return ResponseEntity.ok().body(postPage);
+    }
+
+    // 검색 조회
+    @GetMapping("/search")
+    public ResponseEntity<?> findByKeyword(@RequestParam String keyword, Pageable pageable) {
+        Page<PageResponse> postPage = postService.getPostKeyword(keyword, pageable);
         return ResponseEntity.ok().body(postPage);
     }
 

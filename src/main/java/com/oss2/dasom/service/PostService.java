@@ -121,6 +121,22 @@ public class PostService {
         );
     }
 
+    // 키워드 검색 조회
+    @Transactional(readOnly = true)
+    public Page<PageResponse> getPostKeyword(String keyword, Pageable pageable) {
+
+        Page<Post> postPage = postRepository.findByKeyword(keyword, pageable).orElse(null);
+        return postPage.map(post -> PageResponse.builder()
+                .title(post.getTitle())
+                .createdDate(post.getCreatedDate())
+                .nickname(post.getUser().getNickname())
+                .number(post.getNumber())
+                .gender(post.getGender())
+                .postId(post.getPostId())
+                .build()
+        );
+    }
+
     // 모집 게시물 등록
     @Transactional
     public NanoId createPost(CreatePostRequest dto) {
