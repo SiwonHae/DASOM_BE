@@ -2,10 +2,14 @@ package com.oss2.dasom.service;
 
 import com.oss2.dasom.config.MyAppProperties;
 import com.oss2.dasom.domain.NanoId;
+import com.oss2.dasom.domain.Post;
+import com.oss2.dasom.domain.Request;
 import com.oss2.dasom.domain.User;
 import com.oss2.dasom.dto.GetUserResponse;
 import com.oss2.dasom.dto.SignUpRequest;
 import com.oss2.dasom.dto.UpdateUserRequest;
+import com.oss2.dasom.repository.PostRepository;
+import com.oss2.dasom.repository.RequestRepository;
 import com.oss2.dasom.repository.UserRepository;
 import com.univcert.api.UnivCert;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -21,6 +26,8 @@ public class UserService {
 
     private final MyAppProperties myAppProperties;
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final RequestRepository requestRepository;
 
     public GetUserResponse getUserInfo(String userId) {
         User user = userRepository.findByUserIdAndActiveTrue(NanoId.of(userId)).orElseThrow(() ->
@@ -133,8 +140,24 @@ public class UserService {
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
 
         String key = myAppProperties.getApi_key();
-        UnivCert.clear(key); // 배포시 삭제할 내용
-        UnivCert.clear(key, user.getUnivEmail());
+        //UnivCert.clear(key); // 배포시 삭제할 내용
+        //UnivCert.clear(key, user.getUnivEmail());
+
+        // 작성한 모집글 삭제
+        List<Post> postList = postRepository.findByUser(user).get();
+        for (Post post : postList) {
+            // 자식 신청들 삭제
+            List<Request> requestList = requestRepository.findByPost(post);
+            for (Request request : requestList)
+                requestRepository.delete(request);
+
+            postRepository.delete(post);
+        }
+
+        // 작성한 신청글 삭제
+        List<Request> requestList = requestRepository.findByUser(user);
+        for (Request request : requestList)
+            requestRepository.delete(request);
 
         userRepository.deleteById(NanoId.of(userId));
     }

@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Builder
 @AllArgsConstructor
@@ -41,4 +44,12 @@ public class Post extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    // 달린 신청
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Request> requestList = new ArrayList<>();
+
+    public void addRequest(Request request) {
+        requestList.add(request);
+        request.setPost(this);
+    }
 }

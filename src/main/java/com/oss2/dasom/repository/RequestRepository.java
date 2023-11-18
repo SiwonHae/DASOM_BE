@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface RequestRepository extends JpaRepository<Request, Long> {
     Page<Request> findByUser(User user, Pageable pageable);
+    List<Request> findByUser(User user);
     Page<Request> findByPost(Post post, Pageable pageable);
     List<Request> findByPost(Post post);
     Request findByRequestId(NanoId RequestId);

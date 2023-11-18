@@ -2,6 +2,7 @@ package com.oss2.dasom.controller;
 
 import com.oss2.dasom.domain.Gender;
 import com.oss2.dasom.domain.NanoId;
+import com.oss2.dasom.domain.Number;
 import com.oss2.dasom.domain.Post;
 import com.oss2.dasom.dto.*;
 import com.oss2.dasom.service.PostService;
@@ -40,6 +41,22 @@ public class PostController {
     @GetMapping("/gender/{gender}")
     public ResponseEntity<?> findPostByGender(@PathVariable Gender gender, Pageable pageable) {
         Page<PageResponse> postPage = postService.getPostGender(gender, pageable);
+        return ResponseEntity.ok().body(postPage);
+    }
+
+    // 인원 필터 조회
+    @GetMapping("/number/{number}")
+    public ResponseEntity<?> findPostByNumber(@PathVariable Number number, Pageable pageable) {
+        Page<PageResponse> postPage = postService.getPostNumber(number, pageable);
+        return ResponseEntity.ok().body(postPage);
+    }
+
+    // 성별 필터 조회
+    @GetMapping("/filter")
+    public ResponseEntity<?> findPostByGenderAndNumber(@RequestParam Gender gender,
+                                                       @RequestParam Number number,
+                                                       Pageable pageable) {
+        Page<PageResponse> postPage = postService.getPostGenderAndNumber(gender, number, pageable);
         return ResponseEntity.ok().body(postPage);
     }
 
