@@ -124,7 +124,8 @@ public class RequestService {
 
         requestRepository.save(request);
 
-        notificationService.saveRequest(request, NotificationKind.REQUEST);
+        // 신청했을 때에는 POST 작성자에게 알림 생성
+        notificationService.saveRequest(request, post.getUser().getUserId() ,NotificationKind.REQUEST);
 
         return request.getRequestId();
     }
@@ -183,12 +184,12 @@ public class RequestService {
         requestRepository.save(request);
 
         if (request.getResult() == Result.YES) {
-            notificationService.saveRequest(request, NotificationKind.YES);
+            notificationService.saveRequest(request, request.getUser().getUserId() ,NotificationKind.YES);
 
             // 마감 처리
             post.setActive(false);
-        } else {
-            notificationService.saveRequest(request, NotificationKind.NO);
+        } else { // 거절 일 때
+            notificationService.saveRequest(request, request.getUser().getUserId(), NotificationKind.NO);
         }
     }
 }

@@ -140,8 +140,8 @@ public class UserService {
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
 
         String key = myAppProperties.getApi_key();
-        //UnivCert.clear(key); // 배포시 삭제할 내용
-        //UnivCert.clear(key, user.getUnivEmail());
+        UnivCert.clear(key); // 배포시 삭제할 내용
+        UnivCert.clear(key, user.getUnivEmail());
 
         // 작성한 모집글 삭제
         List<Post> postList = postRepository.findByUser(user).get();

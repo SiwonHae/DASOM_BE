@@ -9,4 +9,5 @@ import java.util.List;
 public interface NotificationRepository extends JpaRepository<Notification, NanoId> {
 
     List<Notification> findByRequest_Post_User_UserId(NanoId userId);
+    List<Notification> findByReceiveUserId(NanoId userId);
 }

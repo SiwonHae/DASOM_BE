@@ -17,11 +17,12 @@ public class NotificationService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
 
-    public void saveRequest(Request request, NotificationKind kind) {
+    public void saveRequest(Request request, NanoId receiveUserId, NotificationKind kind) {
         notificationRepository.save(Notification.builder()
                 .notificationId(NanoId.makeId())
                 .kind(kind)
                 .request(request)
+                .receiveUserId(receiveUserId) // 알림을 받을 userId
                 .status(false)
                 .build());
     }
@@ -31,13 +32,17 @@ public class NotificationService {
         User user = userRepository.findByUserIdAndActiveTrue(NanoId.of(userId)).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않은 회원입니다."));
 
-        List<Notification> notifications = notificationRepository.findByRequest_Post_User_UserId(user.getUserId());
+        List<Notification> notifications = notificationRepository.findByReceiveUserId(user.getUserId());
+        
         List<GetRequestNotificationResponse> getRequestNotificationResponses = notifications.stream().map(noti -> {
-            Request request = noti.getRequest();
+            Request request = noti.getRequest(); // 신청 정보
+
+            String receiveName = (noti.getKind() == NotificationKind.YES) ? request.getUser().getNickname() : request.getPost().getUser().getNickname();
+
             if (noti.getKind() == NotificationKind.YES) {
                 return GetRequestNotificationResponse.builder()
                         .notificationId(noti.getNotificationId().toString())
-                        .requestName(request.getUser().getNickname())
+                        .requestName(receiveName) // 신청한 사람 이름
                         .requestContent(request.getContent())
                         .requestTime(noti.getCreatedDate())
                         .status(noti.isStatus())
@@ -46,10 +51,10 @@ public class NotificationService {
                         .openKakao(request.getPost().getOpenKakaoAddress())
                         .kind(noti.getKind())
                         .build();
-            } else {
+            } else { // 알림 종류가 REQUEST와 NO 일 때 보냄.
                 return GetRequestNotificationResponse.builder()
                         .notificationId(noti.getNotificationId().toString())
-                        .requestName(request.getUser().getNickname())
+                        .requestName(receiveName)
                         .requestContent(request.getContent())
                         .requestTime(noti.getCreatedDate())
                         .status(noti.isStatus())

@@ -27,4 +27,7 @@ public class Notification extends BaseTimeEntity{
     @JoinColumn(name = "request_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Request request;
+
+    @Column(name = "receive_user_id")
+    private NanoId receiveUserId;
 }
