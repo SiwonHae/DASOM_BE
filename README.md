@@ -15,7 +15,7 @@
 
 ### 1. Git Clone
 ```bash
-git clone https://github.com/SiwonHae/DASOM_BE.git
+$ git clone https://github.com/SiwonHae/DASOM_BE.git
 ```
 
 ### 2. 카카오, 네이버 소셜 로그인 설정, UnivCert API 키 발급
@@ -75,8 +75,8 @@ myapp:
 
 ### 4. 프로젝트 빌드 및 실행
 ```bash
-./gradlew build  
-java -jar build/libs/{프로젝트명-버전}.jar
+$ ./gradlew build  
+$ java -jar build/libs/{프로젝트명-버전}.jar
 ```
 
 ## 🪪 라이선스
