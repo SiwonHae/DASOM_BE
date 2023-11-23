@@ -37,12 +37,10 @@ public class NotificationService {
         List<GetRequestNotificationResponse> getRequestNotificationResponses = notifications.stream().map(noti -> {
             Request request = noti.getRequest(); // 신청 정보
 
-            String receiveName = (noti.getKind() == NotificationKind.YES) ? request.getUser().getNickname() : request.getPost().getUser().getNickname();
-
             if (noti.getKind() == NotificationKind.YES) {
                 return GetRequestNotificationResponse.builder()
                         .notificationId(noti.getNotificationId().toString())
-                        .requestName(receiveName) // 신청한 사람 이름
+                        .requestName(request.getPost().getUser().getNickname())
                         .requestContent(request.getContent())
                         .requestTime(noti.getCreatedDate())
                         .status(noti.isStatus())
@@ -54,7 +52,7 @@ public class NotificationService {
             } else { // 알림 종류가 REQUEST와 NO 일 때 보냄.
                 return GetRequestNotificationResponse.builder()
                         .notificationId(noti.getNotificationId().toString())
-                        .requestName(receiveName)
+                        .requestName(request.getUser().getNickname())
                         .requestContent(request.getContent())
                         .requestTime(noti.getCreatedDate())
                         .status(noti.isStatus())
