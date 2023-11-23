@@ -49,7 +49,19 @@ public class NotificationService {
                         .openKakao(request.getPost().getOpenKakaoAddress())
                         .kind(noti.getKind())
                         .build();
-            } else { // 알림 종류가 REQUEST와 NO 일 때 보냄.
+            } if (noti.getKind() == NotificationKind.NO) {
+                return GetRequestNotificationResponse.builder()
+                        .notificationId(noti.getNotificationId().toString())
+                        .requestName(request.getPost().getUser().getNickname())
+                        .requestContent(request.getContent())
+                        .requestTime(noti.getCreatedDate())
+                        .status(noti.isStatus())
+                        .postId(String.valueOf(request.getPost().getPostId()))
+                        .postTitle(request.getPost().getTitle())
+                        .kind(noti.getKind())
+                        .build();
+            }
+            else { // 알림 종류가 REQUEST
                 return GetRequestNotificationResponse.builder()
                         .notificationId(noti.getNotificationId().toString())
                         .requestName(request.getUser().getNickname())
